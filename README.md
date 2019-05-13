@@ -16,4 +16,4 @@ ORM review (Dapper vs EF Core.).
 ## ASP.NET core
 
 ## Machine Learning
-MS.Net
+ML.Net
