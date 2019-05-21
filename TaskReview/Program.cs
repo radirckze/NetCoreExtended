@@ -2,6 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+// Reading / Resources:
+// https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=netframework-4.8
+// https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/task-based-asynchronous-programming
+
+
+
 namespace TaskReview
 {
     class Program
@@ -10,9 +16,37 @@ namespace TaskReview
         static object sem1 = new object();
         static void Main(string[] args)
         {
+            Action<string> PrintMsgAction = (msg) =>
+            {
+                Console.WriteLine(String.Format("PrintMsgAction() called with msg: {0}", msg));
+                Thread.Sleep(2000);
+                Console.WriteLine(String.Format("The message is: {0}", msg));
+            };
+
+
             Console.WriteLine("Starting Task Review main ...");
 
-            try 
+            bool runInitiationPatterns = false;
+            if (runInitiationPatterns) {
+
+
+               Task t1 = new Task(() => PrintMsgAction("Action Task 1"));
+               t1.Start();
+               Task.WaitAll(t1);
+            }
+
+            bool runTaskCancellation = true;
+            if (runTaskCancellation) {
+                CancellationTokenSource cts = new CancellationTokenSource();
+               Task cancelTask = new Task(() => PrintMsgAction("Action Task 1"), cts.Token);
+               cancelTask.Start();
+               cts.Cancel();
+               Task.WaitAll(new Task[] {cancelTask}, cts.Token);
+               Console.WriteLine(String.Format("Task Cancellation - task status = {0}, IsCancelled = {1}", cancelTask.Status, cancelTask.IsCanceled));
+            }
+
+            bool runTestWait = false;
+            if (runTestWait) 
             {
                 // Task cration patterns
                  
@@ -54,10 +88,7 @@ namespace TaskReview
         // t4.Wait();
                 Task.WaitAll(task3);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(String.Format("Exception encounted in Task Review Main() {0}", ex.Message));
-            }
+           
 
             Console.WriteLine("Task Review main done! Press any key to terminate ...");
             Console.ReadLine();
