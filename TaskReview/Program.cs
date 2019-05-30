@@ -15,7 +15,14 @@ namespace TaskReview
         
         static void Main(string[] args)
         {
+    
             Console.WriteLine("Starting Task Review main ...");
+
+             bool runTaskBasics = true;
+            if (runTaskBasics)
+            {
+                (new TaskBasics()).Run();
+            }
            
 
             Console.WriteLine("Task Review main done! Press any key to terminate ...");
