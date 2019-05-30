@@ -36,7 +36,7 @@ namespace TaskReview
         public void Run()
         {
 
-            Console.WriteLine("Starting Task Review main ...");
+            Console.WriteLine("Starting TaskBasics ...");
 
             bool runInitiationPatterns = false;
             if (runInitiationPatterns) {
@@ -71,6 +71,8 @@ namespace TaskReview
                
                 Task.WaitAll(task3);
             }
+
+            Console.WriteLine("Completed TaskBasics.");
         }
 
         #region methods
