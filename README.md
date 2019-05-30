@@ -7,6 +7,7 @@ Threads, Tasks, etc.
 
 ## Async programming  
 Async and TAP (Task based asynchronous pattern).
+Naming/parameters/return type, Initiation/Async, Exceptions, Status, Cancellation, (progress), Implementation ..., 
 
 ## ORM Review
 
