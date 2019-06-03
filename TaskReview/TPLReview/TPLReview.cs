@@ -88,6 +88,14 @@ namespace TaskReview
                 Parallel.Invoke(() => AddIntegers(3,5), () => {Console.WriteLine("2nd task running in parallel");} );
             }
 
+            bool runTaskResult = false;
+            if (runTaskResult)
+            {
+                Task<int> rtTask1 = Task.Factory.StartNew(() => ReturnSum(1,2));
+                int result = rtTask1.Result + Task<int>.Run(() => ReturnSum(3,4)).Result; // calling task.Result will block
+                Console.WriteLine(String.Format("Running task result .... 1+2+3+4 = {0}", result));
+            }
+
             bool runTaskCancellation = false;
             if (runTaskCancellation) {
 
@@ -126,6 +134,10 @@ namespace TaskReview
 
         #region methods
 
+        private int ReturnSum(int num1, int num2) 
+        {
+            return num1 + num2;
+        }
         public async Task PrintIntAsync(string msg)
         {
             await Task.Run(() => PrintMsg(msg));
