@@ -48,7 +48,7 @@ namespace TaskReview
 
             Console.WriteLine("Starting TaskBasics ...");
 
-            bool runInitiationPatterns = true;
+            bool runInitiationPatterns = false;
             if (runInitiationPatterns) 
             {
                 
@@ -59,7 +59,7 @@ namespace TaskReview
                 Task.WaitAll(ipTask1, ipTask2);
 
 
-                // StartNew(...) gives us more task creation options than Task.Run(...)
+                // StartNew(...) gives us more task creation options than Task.Run(...) such as passing task state
                 List<Task> statefulTasks = new List<Task>();
                 for(int i=0; i<5; i++)
                 {
@@ -86,14 +86,6 @@ namespace TaskReview
             if (runParallel)
             {
                 Parallel.Invoke(() => AddIntegers(3,5), () => {Console.WriteLine("2nd task running in parallel");} );
-            }
-
-            bool runTaskResult = false;
-            if (runTaskResult)
-            {
-                Task<int> rtTask1 = Task.Factory.StartNew(() => ReturnSum(1,2));
-                int result = rtTask1.Result + Task<int>.Run(() => ReturnSum(3,4)).Result; // calling task.Result will block
-                Console.WriteLine(String.Format("Running task result .... 1+2+3+4 = {0}", result));
             }
 
             bool runTaskCancellation = false;
@@ -128,6 +120,28 @@ namespace TaskReview
 
                 Console.WriteLine(String.Format("Tasks wait completed. Task2 status = {0}, Task3 status = {1}", task2.Status, task3.Status));
             }
+
+            bool runTaskResult = true;
+            if (runTaskResult)
+            {
+                Task<int> rtTask1 = Task.Factory.StartNew(() => ReturnSum(1,2));
+                int result = rtTask1.Result + Task<int>.Run(() => ReturnSum(3,4)).Result; // calling task.Result will block
+                Console.WriteLine(String.Format("Running task result .... 1+2+3+4 = {0}", result));
+
+                // For more details on returning a result from a task see 
+                // https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-return-a-value-from-a-task
+
+                // Note: Task.Result should be avoided when using async as this could result in a deadlok. More on this later.
+            }
+
+            bool runCreationOptions = false;
+            // Creation options: None, PreferFairness (scheduling), LongRunning, AttachdToParent (for sub-tasks), ...
+            if (runCreationOptions)
+            {
+                Task rcoTask = new Task(() => PrintMsg("runCreationOptions task running ..."), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
+                rcoTask.Start();
+                Task.WaitAll(rcoTask);
+            } 
 
             Console.WriteLine("Completed TaskBasics.");
         }
