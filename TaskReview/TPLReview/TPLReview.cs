@@ -93,12 +93,20 @@ namespace TaskReview
              bool runTaskParemeter = false;
             if (runTaskParemeter)
             {
+                 string w = "";
+                Task temp = new Task((o) => {Console.WriteLine(0);}, w);
+
                 //With Task.Run as this is a single statment you cannot pass any parametrs. 
                 //You can access variables in the task but be aware as the task in on a separate thread so multiple
                 //threads may update the same variable. 
                 int i = 1;
                 int iCopy = i; //Create a copy for the task, just to be on the safe side. 
                 Task.Run(() => ReturnSum(iCopy, 2));
+
+                var startNew = Task<string>.Factory.StartNew((o) => ("holy " + o), "cow");
+
+                //https://www.dotnetforall.com/correct-way-provide-input-parameter-task/
+               
 
             } 
 
