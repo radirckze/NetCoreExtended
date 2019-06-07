@@ -51,6 +51,8 @@ namespace TaskReview
             bool runInitiationPatterns = false;
             if (runInitiationPatterns) 
             {
+                //There are 3 primary task initiations patterns, ie., new Task followed by Start, Task.Run and 
+                // Task.Facory.StartNew
                 
                 Console.WriteLine("Runninng task initiation patterns ...");
                 Task ipTask1 = new Task(() => PrintMsgAction("Action Task 1"));
@@ -59,7 +61,7 @@ namespace TaskReview
                 Task.WaitAll(ipTask1, ipTask2);
 
 
-                // StartNew(...) gives us more task creation options than Task.Run(...) such as passing task state
+                // StartNew(...) gives us more task options than Task.Run(...) such as passing task state
                 List<Task> statefulTasks = new List<Task>();
                 for(int i=0; i<5; i++)
                 {
@@ -80,7 +82,25 @@ namespace TaskReview
                     Console.WriteLine(String.Format("[Stateful task execution info] Name = {0}, thread = {1}, status = {2}", state.Name, state.ThreadNum, task.Status));
                 }
 
+                //Specifying task scheduling options
+                //Available options None, PreferFairness (scheduling), LongRunning, AttachdToParent (for sub-tasks), ...
+                Task rcoTask = new Task(() => PrintMsg("runCreationOptions task running ..."), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
+                rcoTask.Start();
+                Task.WaitAll(rcoTask); 
+
             }
+
+             bool runTaskParemeter = false;
+            if (runTaskParemeter)
+            {
+                //With Task.Run as this is a single statment you cannot pass any parametrs. 
+                //You can access variables in the task but be aware as the task in on a separate thread so multiple
+                //threads may update the same variable. 
+                int i = 1;
+                int iCopy = i; //Create a copy for the task, just to be on the safe side. 
+                Task.Run(() => ReturnSum(iCopy, 2));
+
+            } 
 
             bool runParallel = false;
             if (runParallel)
@@ -121,7 +141,7 @@ namespace TaskReview
                 Console.WriteLine(String.Format("Tasks wait completed. Task2 status = {0}, Task3 status = {1}", task2.Status, task3.Status));
             }
 
-            bool runTaskResult = true;
+            bool runTaskResult = false;
             if (runTaskResult)
             {
                 Task<int> rtTask1 = Task.Factory.StartNew(() => ReturnSum(1,2));
@@ -134,14 +154,13 @@ namespace TaskReview
                 // Note: Task.Result should be avoided when using async as this could result in a deadlok. More on this later.
             }
 
-            bool runCreationOptions = false;
-            // Creation options: None, PreferFairness (scheduling), LongRunning, AttachdToParent (for sub-tasks), ...
-            if (runCreationOptions)
+            bool runTaskContinuations = true;
+            if (runTaskContinuations)
             {
-                Task rcoTask = new Task(() => PrintMsg("runCreationOptions task running ..."), TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness);
-                rcoTask.Start();
-                Task.WaitAll(rcoTask);
-            } 
+                
+                
+               
+            }
 
             Console.WriteLine("Completed TaskBasics.");
         }
