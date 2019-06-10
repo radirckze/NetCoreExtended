@@ -40,7 +40,6 @@ namespace TaskReview
 
         public TPLReview()
         {
-
         }
 
         public void Run()
@@ -48,20 +47,27 @@ namespace TaskReview
 
             Console.WriteLine("Starting TaskBasics ...");
 
-            bool runInitiationPatterns = false;
+            bool runInitiationPatterns = true;
             if (runInitiationPatterns) 
             {
                 //There are 3 primary task initiations patterns, ie., new Task followed by Start, Task.Run and 
                 // Task.Facory.StartNew
                 
+                // new task ...
                 Console.WriteLine("Runninng task initiation patterns ...");
-                Task ipTask1 = new Task(() => PrintMsgAction("Action Task 1"));
-                Task ipTask2 = Task.Run(() => {Console.WriteLine("Lambda expression ipTask2");});
-                ipTask1.Start();
-                Task.WaitAll(ipTask1, ipTask2);
+                Task ipTask1A = new Task(() => PrintMsgAction("Task 1A - PrintMsgAction version")); //using new task (Action delegate) 
+                Task ipTask1B = new Task(() => PrintMsg("Task1B - PrintMsg method version"));  //using new task (method delegate)           
+                Task ipTask1C = new Task(() => Console.WriteLine("Task1C  - inline expression version")); //using new task inline version
+                
+                ipTask1A.Start();
+                ipTask1B.Start();
+                ipTask1C.Start();
 
+                //RunSynchronously and Async
 
-                // StartNew(...) gives us more task options than Task.Run(...) such as passing task state
+                Task.WaitAll(ipTask1A, ipTask1B, ipTask1C);
+
+                // StartNew(...) gives us more task options
                 List<Task> statefulTasks = new List<Task>();
                 for(int i=0; i<5; i++)
                 {
@@ -81,6 +87,13 @@ namespace TaskReview
                     TaskState state = task.AsyncState as TaskState;
                     Console.WriteLine(String.Format("[Stateful task execution info] Name = {0}, thread = {1}, status = {2}", state.Name, state.ThreadNum, task.Status));
                 }
+
+                // Task Run option .... (Light weight version of Task.StartNew)
+                Task ipTask2A = Task.Run(() => {Console.WriteLine("Lambda expression ipTask2");}); //
+
+                Task.WaitAll(ipTask2A);
+
+                
 
                 //Specifying task scheduling options
                 //Available options None, PreferFairness (scheduling), LongRunning, AttachdToParent (for sub-tasks), ...
@@ -162,7 +175,7 @@ namespace TaskReview
                 // Note: Task.Result should be avoided when using async as this could result in a deadlok. More on this later.
             }
 
-            bool runTaskContinuations = true;
+            bool runTaskContinuations = false;
             if (runTaskContinuations)
             {
                 
