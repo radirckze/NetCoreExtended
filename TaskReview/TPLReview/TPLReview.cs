@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +18,18 @@ namespace TaskReview
         public int ThreadNum {get; set;}
     }
 
+    public class TaskParams1
+    {
+        public int Val1 {get; set;}
+        public int Val2 {get; set;}
+    }
+
     #endregion utility classes
 
     public class TPLReview
     {
 
-        #region Actions
+        #region Delegates
 
         Action<string> PrintMsgAction = (msg) =>
         {
@@ -33,7 +40,9 @@ namespace TaskReview
 
         Action<int, int> AddIntegers = (num1, num2) => { Console.WriteLine(String.Format("{0} + {1} is {2}", num1, num2, num1+num2));};
 
-        #endregion Actions
+        Func<int, int, int> ReturnSumFuncDelegate = ReturnSum;
+
+        #endregion Delegates
 
         int counter = 0;
         object sem1 = new object();
@@ -47,7 +56,7 @@ namespace TaskReview
 
             Console.WriteLine("Starting Task Parallel Library (TPL) review ...");
 
-            bool runTaskInstantiationOptions = true;
+            bool runTaskInstantiationOptions = false;
             if (runTaskInstantiationOptions) 
             {
 
@@ -116,17 +125,65 @@ namespace TaskReview
 
             }
 
-            bool runTaskParamsAndResult = false;
+            bool runTaskParamsAndResult = true;
             if (runTaskParamsAndResult)
             {
-                 Task<int> rtTask1 = Task.Factory.StartNew(() => ReturnSum(1,2));
-                int result = rtTask1.Result + Task<int>.Run(() => ReturnSum(3,4)).Result; // calling task.Result will block
-                Console.WriteLine(String.Format("Running task result .... 1+2+3+4 = {0}", result));
+
+                //Recall the two types of Tasks, i.e., one that returns a void and one that returns a result (i.e., Task<TResult>). (So the type 
+                //declaration does not include the arguments.)
+                int two = 2;
+                Task prTask1 = new Task( (x) => 
+                {
+                    int intx = (int)x;
+                    Console.WriteLine(@"Task params and results: {0} squared is {1}", intx, intx*intx);
+                }, two);
+                prTask1.Start();
+
+                Task<int> prTask2 =  new Task<int>((x) => {return (int)x*(int)x;}, two);
+                prTask2.Start();
+                Task.WaitAll(prTask1, prTask2);
+                if (prTask2.Status == TaskStatus.RanToCompletion)
+                {
+                    Console.WriteLine(@"The result from prTask2 is: {0}", prTask2.Result);
+                }
+                else
+                {
+                     Console.WriteLine(@"The completion status of prTask2 is: {0}", prTask2.Status);
+                }
+
+                string prMsg1 = "Task Parameters and Results section - using a delegate";
+                Task prTask3 = Task.Factory.StartNew(() => PrintMsgAction(prMsg1));
+                Task.WaitAll(prTask3);
+
+                Task<int> prTask4 = Task<int>.Factory.StartNew(() => ReturnSum(1,3));
+                Task.WaitAll(prTask4);
+                Console.WriteLine(@"[Params and Results Section] The result from ReturnSum(1,3) is {0}", prTask4.Result);
+
+                Task<int> prTask5 = Task<int>.Factory.StartNew(() => ReturnSumFuncDelegate(2,4));
+                Task.WaitAll(prTask5);
+                Console.WriteLine(@"[Params and Results Section] The result from ReturnSumFuncDelegate(2,4) is {0}", prTask5.Result);
+
+                //Note: we can use the  '=> (...)' to pass arguments to the task constructor, if any.
+                //Below we use a the constructor that takes a state object to pass in variables to the task.
+                Task<int> prTask6 = Task.Factory.StartNew((Object obj) => 
+                    {
+                        TaskParams1 taskParams1 = obj as TaskParams1;
+                        return taskParams1.Val1 + taskParams1.Val2;
+                    }, new TaskParams1() {Val1=3, Val2=6});
+                 Task.WaitAll(prTask6);
+                Console.WriteLine(@"[Params and Results Section] Using state object to pass parameters, 3 + 6 is {0}", prTask6.Result);
+
+                //[TBD] need to add example of passing state to a task that is based on a delegate. 
 
                 // For more details on returning a result from a task see 
                 // https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-return-a-value-from-a-task
-
+                
                 // Note: Task.Result should be avoided when using async as this could result in a deadlok. More on this later.
+
+
+                
+                
+            
             }
 
             bool runTaskCustomization = false;
@@ -208,7 +265,7 @@ namespace TaskReview
 
         #region methods
 
-        private int ReturnSum(int num1, int num2) 
+        private static int ReturnSum(int num1, int num2) 
         {
             return num1 + num2;
         }
@@ -231,6 +288,11 @@ namespace TaskReview
                counter++;
            }
            return counter;
+        }
+
+        private async Task<int> SumTaskParams1Vals(TaskParams1 taskParams1)
+        {
+            return taskParams1.Val1 + taskParams1.Val2;
         }
 
         #endregion methods
