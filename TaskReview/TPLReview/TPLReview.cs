@@ -170,19 +170,14 @@ namespace TaskReview
                         TaskParams1 taskParams1 = obj as TaskParams1;
                         return taskParams1.Val1 + taskParams1.Val2;
                     }, new TaskParams1() {Val1=3, Val2=6});
-                 Task.WaitAll(prTask6);
                 Console.WriteLine(@"[Params and Results Section] Using state object to pass parameters, 3 + 6 is {0}", prTask6.Result);
-
-                //[TBD] need to add example of passing state to a task that is based on a delegate. 
 
                 // For more details on returning a result from a task see 
                 // https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-return-a-value-from-a-task
-                
                 // Note: Task.Result should be avoided when using async as this could result in a deadlok. More on this later.
 
-
-                
-                
+                //When you create a task and pass in a delegate, can you also pass state to the task method? If so, how do you 
+                //acess the state object from withing that method.                
             
             }
 
@@ -269,6 +264,7 @@ namespace TaskReview
         {
             return num1 + num2;
         }
+
         public async Task PrintIntAsync(string msg)
         {
             await Task.Run(() => PrintMsg(msg));
