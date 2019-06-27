@@ -125,7 +125,7 @@ namespace TaskReview
 
             }
 
-            bool runTaskParamsAndResult = true;
+            bool runTaskParamsAndResult = false;
             if (runTaskParamsAndResult)
             {
 
@@ -176,7 +176,7 @@ namespace TaskReview
                 // https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-return-a-value-from-a-task
                 // Note: Task.Result should be avoided when using async as this could result in a deadlok. More on this later.
 
-                //When you create a task and pass in a delegate, can you also pass state to the task method? If so, how do you 
+                //[TBD]When you create a task and pass in a delegate, can you also pass state to the task method? If so, how do you 
                 //acess the state object from withing that method.                
             
             }
@@ -188,8 +188,7 @@ namespace TaskReview
                 //Task.StartNew provides more control such as, specifying the scheduler, providing state, etc.
                 //TBD
 
-
-                 string w = "";
+                string w = "";
                 Task temp = new Task((o) => {Console.WriteLine(0);}, w);
 
                 //With Task.Run as this is a single statment you cannot pass any parametrs. 
@@ -201,8 +200,7 @@ namespace TaskReview
 
                 var startNew = Task<string>.Factory.StartNew((o) => ("holy " + o), "cow");
 
-                //https://www.dotnetforall.com/correct-way-provide-input-parameter-task/
-               
+                //https://www.dotnetforall.com/correct-way-provide-input-parameter-task/             
 
             } 
 
@@ -219,7 +217,13 @@ namespace TaskReview
             bool runTaskContinue = false;
             if (runTaskContinue)
             {
-                //Task<int, int> squareTask = new Task<int>(() => {return 5*5;});
+                //Take a palindrome, unformat, reverse each word, construct palindrome and format.
+                string originalStr = "able was i i saw elba";
+                Task<string[]> deconstructPalindrome = Task.Factory.StartNew((Object obj) => {
+                    return (obj as string).Split("");  
+                }, originalStr);
+
+                Task<string[]> reverseWords = Task.Factory.StartNew((Object obj))
             }
 
             bool runTaskSuncAndManagement = false;
