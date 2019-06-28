@@ -218,17 +218,66 @@ namespace TaskReview
             if (runTaskContinue)
             {
                 //Take a palindrome, unformat, reverse each word, construct palindrome and format.
-                string originalStr = "able was i i saw elba";
-                Task<string[]> deconstructPalindrome = Task.Factory.StartNew((Object obj) => {
+                string originalStr = "Able was I I saw Elba";
+                Task<string[]> deconstructPalindrome = Task.Factory.StartNew((Object obj) => 
+                {
                     return (obj as string).Split("");  
                 }, originalStr);
 
-                Task<string[]> reverseWords = Task.Factory.StartNew((Object obj))
+                Task<string[]> reverseWords = deconstructPalindrome.ContinueWith((x) => 
+                {
+                    string[] words = x.Result as string[];
+                    string[] reversedWords = new string[words.Length];
+                    for (int i=0; i<words.Length; i++) 
+                    {
+                        char[] chars = words[i].ToCharArray();
+                        Array.Reverse(chars);
+                        reversedWords[i] = new string(chars);
+                    }
+                    return reversedWords;
+                });
+
+                Task<string> makeSentence = reverseWords.ContinueWith((x) => 
+                {
+                    return String.Join(" ", x.Result);
+                });
+
+                Task.WaitAll(makeSentence);
+                Console.WriteLine(@"[TaskContinueWith] Palindrome of <{0}> is <{1}>", originalStr, makeSentence.Result);
+
+                //Note: we could string the three tasks together in a single statements as follows: 
+                //Task<string[]> deconstructPalindrome = Task.Factory.StartNew((Object obj) => {...}, ...).ContinueWith(...)
             }
 
-            bool runTaskSuncAndManagement = false;
+            bool runTaskSuncAndManagement = true;
             if (runTaskSuncAndManagement)
             {
+                //Child tasks 
+                //Detached child task example
+                Task<Task> parentTask = Task.Factory.StartNew(() => 
+                {
+                    Task childTask = Task.Factory.StartNew(() => Thread.SpinWait(2000));
+                    return childTask;
+                });
+                Task.WaitAll(parentTask);
+                Task detachedChild = parentTask.Result;
+                Console.WriteLine(@"[Detached Child] Parent task status is {0}. Detached child task status is {1}", parentTask.Status, detachedChild.Status);
+                Task.WaitAll(detachedChild);
+                Console.WriteLine(@"[Detached Child] After WaitAll(detachedChild), child task status is {0}", detachedChild.Status);
+
+                //Attached  child task example. (Note, parent cannot return the child task as its not available at end of task)
+                parentTask = Task.Factory.StartNew(() => 
+                {
+                    Task childTask  = Task.Factory.StartNew(() => 
+                    {
+                        Thread.SpinWait(2000);
+                    }, TaskCreationOptions.AttachedToParent);
+                    return childTask;
+                });
+                Task.WaitAll(parentTask);
+                Task attachedChild = parentTask.Result;
+                Console.WriteLine(@"[Attached Child] Parent task status is {0}. Attached child task status is {1}", parentTask.Status, attachedChild.Status);
+
                 //Task cancellation ....
                 Console.WriteLine("Runninng task cancellation ...");
                 CancellationTokenSource cts = new CancellationTokenSource();
@@ -247,8 +296,8 @@ namespace TaskReview
 
                 Console.WriteLine(String.Format("Task Cancellation completed. Task status = {0}, IsCancelled = {1}", cancelTask.Status, cancelTask.IsCanceled));
 
-                //Taks wait
-                 Console.WriteLine("Runninng task wait ..."); 
+                //Taks wait (WaitAll, WaitAny)
+                Console.WriteLine("Runninng task wait ..."); 
                 Task.Run(() => PrintMsg("Task 1")).Wait(); // will wait before moving on to next line of code
                 Task task2 = Task.Run(() => PrintMsg("Task 2")); // will start task and move on to next line of code
                 Task task3 = Task.Run(() => PrintMsg("Task 3")); // will start task and move on to next line of code               
@@ -256,7 +305,12 @@ namespace TaskReview
 
                 Console.WriteLine(String.Format("Tasks wait completed. Task2 status = {0}, Task3 status = {1}", task2.Status, task3.Status));
 
-                //RunSynchronously and Async
+                //[Example TBD] WhenAll - asynchronously waits for Task or Task<TResult> objects to finish. This is an asynchronous version of (blocking) WaitAll.
+                //[Example TBD] WhenAny
+
+                //[Example TBD] Task.Delay - produces a task object that finishes after given period of time.
+
+                //[Example TBD] Task(T).FromResult
             }
 
             Console.WriteLine("Completed TaskBasics.");
