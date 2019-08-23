@@ -5,9 +5,7 @@ A repository for extended / Advanced .Net Core samples. Use the NetCoreBasic for
 ## Task Review  
 Threads, Tasks, etc.
 
-## Async programming  
-Async and TAP (Task based asynchronous pattern).
-Naming/parameters/return type, Initiation/Async, Exceptions, Status, Cancellation, (progress), Implementation ..., 
+
 
 ## ORM Review
 
