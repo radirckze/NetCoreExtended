@@ -3,7 +3,7 @@
 A repository for extended / Advanced .Net Core samples. Use the NetCoreBasic for simple / quick samples. 
 
 ## Task Review  
-Threads, Tasks, etc.
+Review Task Parallel library and TAP (Task Async Pattern)
 
 
 
