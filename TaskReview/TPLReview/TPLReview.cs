@@ -249,8 +249,8 @@ namespace TaskReview
                 //Task<string[]> deconstructPalindrome = Task.Factory.StartNew((Object obj) => {...}, ...).ContinueWith(...)
             }
 
-            bool runTaskSuncAndManagement = true;
-            if (runTaskSuncAndManagement)
+            bool runTaskSyncAndManagement = true;
+            if (runTaskSyncAndManagement)
             {
                 //Child tasks 
                 //Detached child task example
