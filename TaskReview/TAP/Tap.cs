@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +15,63 @@ namespace TAP
     //An asynchronous method should minimize the synchronous work it needs to do.
     //An asynchronous method should throw an exception only in response to a usage error. 
 
-    //TBD: See Task Status, Cancellation and Progress Reporting. 
+    public class TAP
+    {
 
+        public void Run()
+        {
 
+            Console.WriteLine("Starting TAP Pattern review ...");
+
+            bool runTBDSection = false;
+            if (runTBDSection) 
+            {          
+
+            }
+            
+            //See Task Status, Cancellation and Progress Reporting. 
+
+            Console.WriteLine("Completed TAP Pattern review");
+
+        }
+
+        #region TAP and auxiliary methods
+        
+        // Using compiler to generate TAP method (i.e., adding async keyword)
+        public async Task<int> GetContentsAsync(string url) 
+        {
+            string retStr = "";
+            HttpClient client = new HttpClient();
+            retStr = await client.GetStringAsync(url); 
+            return retStr.Length;
+        }
+
+        //Using the manual method (i.e., create a TaskCompletionSource and setResult, SetException, SetCancel, etc)
+        public static Task<int> ReadTask(string url)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            try
+            {
+                HttpClient client = new HttpClient();
+                tcs.SetResult(client.GetStringAsync(url).Result.Length);
+            }
+            catch (Exception exc) 
+            {
+                tcs.SetException(exc); 
+            }
+            return tcs.Task;
+        }
+
+        public async Task<int> GetContentsAsyncException(string url) 
+        {
+            string retStr = "";
+            HttpClient client = new HttpClient();
+            retStr = await client.GetStringAsync(url); 
+            throw new ApplicationException();
+            return retStr.Length;
+
+        }
+
+        #endregion TAP and auziliary methods
+    }
 }
