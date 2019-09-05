@@ -22,3 +22,6 @@ https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patter
 **Implementing TAP Pattern**  
 You can implement the Task-based Asynchronous Pattern (TAP) in three ways: by using the compilers in Visual Studio, manually, or a combination of the compiler and manual methods. 
 
+**Workload Best Practices**  
+While TAP methods can be used for compute-bound and I/O-bound asynchronous operations, when TAP methods are exposed publicly from a library, they should be provided only for workloads that primarily involve I/O-bound operations. If a method is purely compute-bound, it should be exposed only as a synchronous implementation. The code that consumes it may then choose whether to wrap it in a task to offload the work to another thread.
+

@@ -62,6 +62,9 @@ namespace TAP
             return tcs.Task;
         }
 
+        //Hybrid approach (not shown here) - implement the TAP pattern manually in one method but delegate the core 
+        //logic for the implementation to another method
+
         public async Task<int> GetContentsAsyncException(string url) 
         {
             string retStr = "";
