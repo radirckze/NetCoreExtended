@@ -30,6 +30,7 @@ namespace TAP
             }
             
             //See Task Status, Cancellation and Progress Reporting. 
+            //Not addressed here - throttling, 
 
             Console.WriteLine("Completed TAP Pattern review");
 
