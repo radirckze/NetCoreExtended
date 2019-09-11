@@ -22,12 +22,12 @@ namespace TAP
         {
 
             Console.WriteLine("Starting TAP Pattern review ...");
-
-            bool runTBDSection = false;
-            if (runTBDSection) 
-            {          
-
-            }
+ 
+            Task<int> getContentsAsync = GetContentsAsync("http://developer.microsoft.com/");
+            Task<int> readTask = ReadTask("http://developer.microsoft.com/");
+            Task.WaitAll(getContentsAsync, readTask);
+            Console.WriteLine("GetContentsAsync: length of www.msdn.com is {0}", getContentsAsync.Result);
+            Console.WriteLine("ReadTask: length of www.msdn.com is {0}", readTask.Result);      
             
             //See Task Status, Cancellation and Progress Reporting. 
             //Not addressed here - throttling, 
@@ -48,7 +48,7 @@ namespace TAP
         }
 
         //Using the manual method (i.e., create a TaskCompletionSource and setResult, SetException, SetCancel, etc)
-        public static Task<int> ReadTask(string url)
+        public Task<int> ReadTask(string url)
         {
             var tcs = new TaskCompletionSource<int>();
             try

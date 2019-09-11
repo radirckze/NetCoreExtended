@@ -2,9 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-
-
-
+using TAP;
 
 namespace TaskReview
 {
@@ -16,17 +14,20 @@ namespace TaskReview
     
             Console.WriteLine("Starting Task Review main ...");
 
-            bool runTaskBasics = true;
+            bool runTaskBasics = false;
             if (runTaskBasics)
             {
                 (new TPLReview()).Run();
             }
 
             // Lets TAP ....
-            Console.WriteLine("Runninng TAP ...");
-           
+            bool runTapReview = true;
+            if (runTapReview)
+            {
+                TAP.TAP tapInstance = new TAP.TAP();
+                tapInstance.Run();
+            }
 
-            Console.WriteLine("TAP review completed.");
 
             Console.WriteLine("Task Review main done! Press any key to terminate ...");
             Console.ReadLine();
