@@ -1,5 +1,6 @@
 ## Task Programming Review
 
+_**Note** This bilds on [NetAsync](https://github.com/radirckze/NetCoreBasics/tree/master/NetAsync) in the NetCoreBasics repo_  
 
 ### Reading / Resources:  
 https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=netframework-4.8  

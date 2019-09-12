@@ -66,16 +66,6 @@ namespace TAP
         //Hybrid approach (not shown here) - implement the TAP pattern manually in one method but delegate the core 
         //logic for the implementation to another method
 
-        public async Task<int> GetContentsAsyncException(string url) 
-        {
-            string retStr = "";
-            HttpClient client = new HttpClient();
-            retStr = await client.GetStringAsync(url); 
-            throw new ApplicationException();
-            return retStr.Length;
-
-        }
-
         #endregion TAP and auziliary methods
     }
 }
