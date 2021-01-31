@@ -38,6 +38,29 @@ namespace TaskReview
             Console.WriteLine(String.Format("The message is: {0}", msg));
         };
 
+        Action<string> PrintMsgLoopAction = (msg) =>
+        {
+            int loopCount = 0;
+            while (true)
+            {
+                Console.WriteLine(String.Format("[{0}] PrintMsgLoopAction() called with msg: {1}", ++loopCount, msg));
+                Thread.Sleep(1000);
+            }
+        };
+
+        Action<string, CancellationToken> PrintMsgLoopActionWithGracefulCancel = (msg, ct) =>
+        {
+            int loopCount = 0;
+            while (!ct.IsCancellationRequested)
+            {
+                Console.WriteLine(String.Format("[{0}] PrintMsgLoopActionWithGracefulCancel() called with msg: {1}", ++loopCount, msg));
+                Thread.Sleep(1000);
+            }
+
+            Console.WriteLine(String.Format("PrintMsgLoopActionWithGracefulCancel() cancellation requested"));
+        };
+
+
         Action<int, int> AddIntegers = (num1, num2) => { Console.WriteLine(String.Format("{0} + {1} is {2}", num1, num2, num1+num2));};
 
         Func<int, int, int> ReturnSumFuncDelegate = ReturnSum;
@@ -281,13 +304,28 @@ namespace TaskReview
                 //Task cancellation ....
                 Console.WriteLine("Runninng task cancellation ...");
                 CancellationTokenSource cts = new CancellationTokenSource();
-                Task cancelTask = new Task(() => PrintMsgAction("Action Task 1"), cts.Token);
+                Task cancelTask = null;
+
+                //// Involuntary task cancellation
+                //// *** Note, currently this is not possible. The task needs to do monitor token and terminate upon request.
+                //cancelTask = new Task(() => PrintMsgLoopAction("Testing involuntary cancel"), cts.Token);
+                //cancelTask.Start();
+                //Thread.Sleep(3000);
+                //cts.Cancel();
+                //while (!cancelTask.IsCanceled && !cancelTask.IsCompleted)
+                //{
+                //}
+                
+                cts = new CancellationTokenSource();
+                // Managed task cancellation
+                cancelTask = new Task(() => PrintMsgLoopActionWithGracefulCancel("Testing graceful cancel", cts.Token), cts.Token);
                 cancelTask.Start();
+                Thread.Sleep(3000);
                 cts.Cancel();
-                try 
+                try
                 {
                     cancelTask.Wait(cts.Token);
-                   //Task.WaitAll(new Task[] {cancelTask}, cts.Token);
+                    //Task.WaitAll(new Task[] {cancelTask}, cts.Token);
                 }
                 catch (OperationCanceledException ocex)
                 {

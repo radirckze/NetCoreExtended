@@ -14,14 +14,14 @@ namespace TaskReview
     
             Console.WriteLine("Starting Task Review main ...");
 
-            bool runTaskBasics = false;
+            bool runTaskBasics = true;
             if (runTaskBasics)
             {
                 (new TPLReview()).Run();
             }
 
             // Lets TAP ....
-            bool runTapReview = true;
+            bool runTapReview = false;
             if (runTapReview)
             {
                 TAP.TAP tapInstance = new TAP.TAP();
